@@ -3,6 +3,7 @@ from rest_framework import status
 # import pdb
 # pdb.set_trace()
 from django.urls import reverse
+from __Common.utils.tests import test_auth
 
 
 class TestCreatePostView(TestSetUp):
@@ -12,8 +13,7 @@ class TestCreatePostView(TestSetUp):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_with_no_data(self):
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
 
         res = self.client.post(self.create_post_url)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -22,8 +22,7 @@ class TestCreatePostView(TestSetUp):
 
         # Generate random pixel values for the image
 
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_post = self.client.post(self.create_post_url, self.post)
@@ -38,8 +37,7 @@ class TestListPostView(TestSetUp):
 
 class TestGetPostDetailView(TestSetUp):
     def test_post_detail(self):
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
@@ -50,8 +48,7 @@ class TestGetPostDetailView(TestSetUp):
 
 class TestDeletePostView(TestSetUp):
     def test_post_delete(self):
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
@@ -60,20 +57,17 @@ class TestDeletePostView(TestSetUp):
         self.assertEqual(res_create_post.status_code, status.HTTP_201_CREATED)
 
     def test_post_delete_fail_permission_denied(self):
-        self.client.post(self.register_url, self.user_2)
-        self.client.post(self.login_url, self.user_2)
+        test_auth.test_register_login(self, data=self.user_2)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         res = self.client.delete(reverse('delete-post',  kwargs={'pk': res_create_post.data['post'].get('id')}))
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(res_create_post.status_code, status.HTTP_201_CREATED)
 
     def test_post_not_found(self):
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
@@ -84,20 +78,17 @@ class TestDeletePostView(TestSetUp):
 
 class TestUpdatePostView(TestSetUp):
     def test_post_update_fail_permission_denied(self):
-        self.client.post(self.register_url, self.user_2)
-        self.client.post(self.login_url, self.user_2)
+        test_auth.test_register_login(self, data=self.user_2)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
-        self.client.post(self.register_url, self.user)
-        self.client.post(self.login_url, self.user)
+        test_auth.test_register_login(self, data=self.user)
         res = self.client.put(reverse('update-post', kwargs={'pk': res_create_post.data['post'].get('id')}), data=self.post_update,)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(res_create_post.status_code, status.HTTP_201_CREATED)
 
     def test_post_update_success(self):
-        self.client.post(self.register_url, self.user_2)
-        self.client.post(self.login_url, self.user_2)
+        test_auth.test_register_login(self, data=self.user_2)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
@@ -106,8 +97,7 @@ class TestUpdatePostView(TestSetUp):
         self.assertEqual(res_create_post.status_code, status.HTTP_201_CREATED)
 
     def test_post_update_not_found(self):
-        self.client.post(self.register_url, self.user_2)
-        self.client.post(self.login_url, self.user_2)
+        test_auth.test_register_login(self, data=self.user_2)
         with open('posts/tests/dsa.png', '+rb') as file:
             self.post['image'] = file
             res_create_post = self.client.post(self.create_post_url, self.post)
@@ -122,7 +112,6 @@ class TestListPostMeView(TestSetUp):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_post_list_success(self):
-        self.client.post(self.register_url, self.user_2)
-        self.client.post(self.login_url, self.user_2)
+        test_auth.test_register_login(self, data=self.user_2)
         res = self.client.get(reverse('list-post-me'))
         self.assertEqual(res.status_code, status.HTTP_200_OK)

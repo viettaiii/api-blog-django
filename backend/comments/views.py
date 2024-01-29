@@ -48,9 +48,9 @@ class CreateCommentView(AuthenticationPermissionMixin, APIView):
             serializer.save()
             res.data = {
                 'message': "Comment created successfully!",
-                'post': serializer.data
+                'data': serializer.data
             }
-            res.response_code = status.HTTP_201_CREATED
+            res.status_code = status.HTTP_201_CREATED
             return res
 
         # The comment was failed when created.

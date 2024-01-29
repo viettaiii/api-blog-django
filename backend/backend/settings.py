@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'posts',
     'comments',
     'likes',
+    '__Common',
     'likesComment',
     'friendRequests',
     'notifications',
