@@ -8,3 +8,5 @@ urlpatterns = [
     path('delete/<int:pk>/' , views.DeleteCommentView.as_view(), name='delete-comment'),
     path('list/' , views.GetAllCommentView.as_view(), name='list-comment')
 ]
+
+

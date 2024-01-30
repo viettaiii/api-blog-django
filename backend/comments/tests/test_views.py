@@ -102,7 +102,7 @@ class TestUpdateCommentView(TestSetUp):
         self.assertEqual(res_comment.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_comment_not_found(self):
+    def test_not_found(self):
         test_auth.test_register_login(self, data=self.user)
         res_comment = self.client.post(self.create_comment_url, data=self.comment)
         res = self.client.put(reverse('update-comment',  kwargs={'pk': 1000000}))
